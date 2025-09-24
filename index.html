@@ -528,12 +528,13 @@
                     <h1>Sax Advisory Group</h1>
                     <p>Internal Portal & Collaboration Hub</p>
                 </div>
-                <div class="user-info">
-                    <div class="user-avatar">MC</div>
-                    <div>
-                        <div style="font-weight: bold;">Marketing Coordinator</div>
-                        <div style="color: #7f8c8d; font-size: 0.9em;">Junior Level - Intranet Developer</div>
+                <div class="user-info" id="userInfo">
+                    <div class="user-avatar" id="userAvatar">...</div>
+                    <div id="userDetails">
+                        <div style="font-weight: bold;" id="userName">Loading...</div>
+                        <div style="color: #7f8c8d; font-size: 0.9em;" id="userRole">Authenticating...</div>
                     </div>
+                    <button onclick="logout()" style="margin-left: 15px; padding: 8px 15px; border: none; background: #e74c3c; color: white; border-radius: 5px; cursor: pointer;">Logout</button>
                 </div>
             </div>
         </header>
@@ -909,6 +910,38 @@
     </div>
 
     <script>
+        // Authentication and user management
+        async function loadUserInfo() {
+            try {
+                const response = await fetch('/.auth/me');
+                const payload = await response.json();
+                
+                if (payload.clientPrincipal) {
+                    const user = payload.clientPrincipal;
+                    const userName = user.userDetails || user.userId;
+                    const initials = userName.split(/[\s@]+/).map(n => n[0]).join('').toUpperCase().substring(0, 2);
+                    
+                    document.getElementById('userName').textContent = userName;
+                    document.getElementById('userAvatar').textContent = initials;
+                    document.getElementById('userRole').textContent = 'Authenticated User • ' + (user.identityProvider || 'Microsoft 365');
+                } else {
+                    // Redirect to login if not authenticated
+                    window.location.href = '/.auth/login/aad';
+                }
+            } catch (error) {
+                console.log('Authentication check failed:', error);
+                // Redirect to login on error
+                window.location.href = '/.auth/login/aad';
+            }
+        }
+        
+        function logout() {
+            window.location.href = '/.auth/logout';
+        }
+        
+        // Load user info on page load
+        document.addEventListener('DOMContentLoaded', loadUserInfo);
+        
         // Chat functionality
         function sendMessage() {
             const input = document.getElementById('chatInput');
