@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MegaMind - SAX Intranet</title>
+    <style>
+        /* SharePoint Modern Page Styling */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: "Segoe UI", "Segoe UI Web (West European)", "Segoe UI", -apple-system, BlinkMacSystemFont, Roboto, "Helvetica Neue", sans-serif;
+            background-color: #f3f2f1;
+            color: #323130;
+            line-height: 1.4;
+            font-size: 14px;
+        }
+
+        /* SharePoint Container */
+        .ms-Fabric {
+            background-color: #f3f2f1;
+            min-height: 100vh;
+        }
+
+        /* SharePoint Page Header */
+        .sp-page-header {
+            background: #ffffff;
+            border-bottom: 1px solid #edebe9;
+            padding: 16px 0;
+        }
+
+        .sp-page-title {
+            font-size: 32px;
+            font-weight: 600;
+            color: #323130;
+            margin: 0;
+            padding: 0 24px;
+        }
+
+        /* SharePoint Canvas */
+        .sp-canvas {
+            max-width: 1024px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+
+        /* SharePoint Banner Web Part */
+        .sp-banner {
+            position: relative;
+            width: 100%;
+            height: 450px;
+            margin: 32px 0;
+            border-radius: 4px;
+            overflow: hidden;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        .sp-banner-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+
+        .sp-banner-content {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background: rgba(0, 0, 0, 0.4);
+            color: white;
+            text-align: center;
+        }
+
+        .sp-banner-topic {
+            font-size: 16px;
+            font-weight: 400;
+            margin-bottom: 8px;
+            opacity: 0.9;
+        }
+
+        .sp-banner-title {
+            font-size: 48px;
+            font-weight: 600;
+            margin: 0;
+        }
+
+        /* SharePoint Section Layout */
+        .sp-section {
+            margin: 40px 0;
+        }
+
+        .sp-section-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 32px;
+            margin: 32px 0;
+        }
+
+        /* SharePoint Cards */
+        .sp-card {
+            background: #ffffff;
+            border-radius: 4px;
+            padding: 24px;
+            text-align: center;
+            box-shadow: 0 1.6px 3.6px 0 rgba(0,0,0,0.132), 0 0.3px 0.9px 0 rgba(0,0,0,0.108);
+            transition: box-shadow 0.2s ease;
+        }
+
+        .sp-card:hover {
+            box-shadow: 0 6.4px 14.4px 0 rgba(0,0,0,0.132), 0 1.2px 3.6px 0 rgba(0,0,0,0.108);
+        }
+
+        .sp-card-image {
+            width: 100%;
+            height: 180px;
+            object-fit: cover;
+            border-radius: 4px;
+            margin-bottom: 16px;
+            background: #f3f2f1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 48px;
+        }
+
+        .sp-card-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #323130;
+            margin: 16px 0 12px 0;
+        }
+
+        .sp-card-description {
+            font-size: 14px;
+            color: #605e5c;
+            line-height: 1.5;
+            margin-bottom: 20px;
+        }
+
+        .sp-button {
+            background: #0078d4;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 2px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            transition: background-color 0.2s ease;
+        }
+
+        .sp-button:hover {
+            background: #106ebe;
+        }
+
+        /* SharePoint Quick Links */
+        .sp-quicklinks {
+            margin: 40px 0;
+        }
+
+        .sp-quicklinks-title {
+            font-size: 24px;
+            font-weight: 600;
+            color: #323130;
+            margin-bottom: 20px;
+        }
+
+        .sp-quicklinks-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+        }
+
+        .sp-quicklink {
+            background: #ffffff;
+            border-radius: 4px;
+            padding: 16px;
+            text-align: center;
+            box-shadow: 0 1.6px 3.6px 0 rgba(0,0,0,0.132), 0 0.3px 0.9px 0 rgba(0,0,0,0.108);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            text-decoration: none;
+            color: #323130;
+        }
+
+        .sp-quicklink:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 3.2px 7.2px 0 rgba(0,0,0,0.132), 0 0.6px 1.8px 0 rgba(0,0,0,0.108);
+            text-decoration: none;
+            color: #323130;
+        }
+
+        .sp-quicklink-image {
+            width: 100%;
+            height: 120px;
+            object-fit: cover;
+            border-radius: 4px;
+            margin-bottom: 12px;
+            background: #f3f2f1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 36px;
+        }
+
+        .sp-quicklink-title {
+            font-size: 14px;
+            font-weight: 600;
+            margin: 0;
+        }
+
+        /* SharePoint Button Links */
+        .sp-button-links {
+            display: flex;
+            gap: 16px;
+            margin: 32px 0;
+            flex-wrap: wrap;
+        }
+
+        .sp-button-link {
+            background: #ffffff;
+            color: #0078d4;
+            border: 1px solid #0078d4;
+            padding: 12px 24px;
+            border-radius: 2px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .sp-button-link:hover {
+            background: #0078d4;
+            color: white;
+            text-decoration: none;
+        }
+
+        /* SharePoint Hero Section */
+        .sp-hero {
+            background: #ffffff;
+            border-radius: 4px;
+            overflow: hidden;
+            margin: 32px 0;
+            box-shadow: 0 1.6px 3.6px 0 rgba(0,0,0,0.132), 0 0.3px 0.9px 0 rgba(0,0,0,0.108);
+        }
+
+        .sp-hero-content {
+            padding: 32px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            text-align: center;
+        }
+
+        .sp-hero-feature {
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 8px;
+            opacity: 0.9;
+        }
+
+        .sp-hero-title {
+            font-size: 28px;
+            font-weight: 600;
+            margin-bottom: 12px;
+        }
+
+        .sp-hero-description {
+            font-size: 16px;
+            margin-bottom: 20px;
+            opacity: 0.9;
+        }
+
+        .sp-hero-button {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            padding: 12px 24px;
+            border-radius: 2px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            transition: background-color 0.2s ease;
+        }
+
+        .sp-hero-button:hover {
+            background: rgba(255, 255, 255, 0.3);
+            color: white;
+            text-decoration: none;
+        }
+
+        /* Contact Section */
+        .sp-contact {
+            background: #ffffff;
+            border-radius: 4px;
+            padding: 40px;
+            text-align: center;
+            margin: 40px 0;
+            box-shadow: 0 1.6px 3.6px 0 rgba(0,0,0,0.132), 0 0.3px 0.9px 0 rgba(0,0,0,0.108);
+        }
+
+        .sp-contact-title {
+            font-size: 28px;
+            font-weight: 600;
+            color: #323130;
+            margin-bottom: 16px;
+        }
+
+        .sp-contact-description {
+            font-size: 16px;
+            color: #605e5c;
+            margin-bottom: 32px;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .sp-divider {
+            height: 1px;
+            background: #edebe9;
+            margin: 24px 0;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .sp-section-grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+
+            .sp-quicklinks-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .sp-banner {
+                height: 300px;
+            }
+
+            .sp-banner-title {
+                font-size: 32px;
+            }
+
+            .sp-canvas {
+                padding: 0 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="ms-Fabric">
+        <!-- SharePoint Page Header -->
+        <div class="sp-page-header">
+            <h1 class="sp-page-title">MegaMind</h1>
+        </div>
+
+        <!-- SharePoint Canvas -->
+        <div class="sp-canvas">
+            <!-- Hero Banner (from SharePoint data) -->
+            <div class="sp-banner">
+                <div class="sp-banner-content">
+                    <div class="sp-banner-topic">Our brand, our promise</div>
+                    <h1 class="sp-banner-title">MegaMind</h1>
+                </div>
+            </div>
+
+            <!-- Main Content Sections -->
+            <div class="sp-section-grid">
+                <!-- Resources Card -->
+                <div class="sp-card">
+                    <div class="sp-card-image" style="background: linear-gradient(135deg, #3498db, #2980b9); color: white;">
+                        📋
+                    </div>
+                    <h3 class="sp-card-title">Resources</h3>
+                    <p class="sp-card-description">Find documents, forms, tax codes, and any other resources you may need.</p>
+                    <a href="#" class="sp-button" onclick="openSharePointLink('Resources')">Explore images</a>
+                </div>
+
+                <!-- News & Updates Card -->
+                <div class="sp-card">
+                    <div class="sp-card-image" style="background: linear-gradient(135deg, #e67e22, #f39c12); color: white;">
+                        📰
+                    </div>
+                    <h3 class="sp-card-title">News & Updates</h3>
+                    <p class="sp-card-description">See what's going on at SAX! Click here for relevant updates, exciting news, and info to help you stay up to date with the firm.</p>
+                    <a href="#" class="sp-button" onclick="openSharePointLink('News')">Download guidelines</a>
+                </div>
+
+                <!-- Present Powerfully Card -->
+                <div class="sp-card">
+                    <div class="sp-card-image" style="background: linear-gradient(135deg, #9b59b6, #8e44ad); color: white;">
+                        📊
+                    </div>
+                    <h3 class="sp-card-title">Present powerfully</h3>
+                    <p class="sp-card-description">Discover tips, templates, and tools to help you build powerful product presentations.</p>
+                    <a href="#" class="sp-button" onclick="openSharePointLink('Presentations')">View presentation tools</a>
+                </div>
+            </div>
+
+            <!-- Branding Identity Quick Links -->
+            <div class="sp-quicklinks">
+                <h2 class="sp-quicklinks-title">Branding identity</h2>
+                <div class="sp-quicklinks-grid">
+                    <a href="#" class="sp-quicklink" onclick="openSharePointLink('Logos')">
+                        <div class="sp-quicklink-image" style="background: linear-gradient(135deg, #ff6b35, #f7931e); color: white;">🎨</div>
+                        <h4 class="sp-quicklink-title">Logos</h4>
+                    </a>
+                    <a href="#" class="sp-quicklink" onclick="openSharePointLink('Icons')">
+                        <div class="sp-quicklink-image" style="background: linear-gradient(135deg, #3498db, #2980b9); color: white;">⚡</div>
+                        <h4 class="sp-quicklink-title">Icons</h4>
+                    </a>
+                    <a href="#" class="sp-quicklink" onclick="openSharePointLink('Fonts')">
+                        <div class="sp-quicklink-image" style="background: linear-gradient(135deg, #27ae60, #229954); color: white;">🔤</div>
+                        <h4 class="sp-quicklink-title">Fonts</h4>
+                    </a>
+                    <a href="#" class="sp-quicklink" onclick="openSharePointLink('Colors')">
+                        <div class="sp-quicklink-image" style="background: linear-gradient(135deg, #e74c3c, #c0392b); color: white;">🎨</div>
+                        <h4 class="sp-quicklink-title">Colors</h4>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Templates Quick Links -->
+            <div class="sp-quicklinks">
+                <h2 class="sp-quicklinks-title">Templates</h2>
+                <div class="sp-quicklinks-grid">
+                    <a href="#" class="sp-quicklink" onclick="openSharePointLink('Email Templates')">
+                        <div class="sp-quicklink-image" style="background: linear-gradient(135deg, #f39c12, #e67e22); color: white;">📧</div>
+                        <h4 class="sp-quicklink-title">Email</h4>
+                    </a>
+                    <a href="#" class="sp-quicklink" onclick="openSharePointLink('Merchandising')">
+                        <div class="sp-quicklink-image" style="background: linear-gradient(135deg, #9b59b6, #8e44ad); color: white;">🛍️</div>
+                        <h4 class="sp-quicklink-title">Merchandising</h4>
+                    </a>
+                    <a href="#" class="sp-quicklink" onclick="openSharePointLink('Social Media')">
+                        <div class="sp-quicklink-image" style="background: linear-gradient(135deg, #16a085, #27ae60); color: white;">📱</div>
+                        <h4 class="sp-quicklink-title">Social media</h4>
+                    </a>
+                    <a href="#" class="sp-quicklink" onclick="openSharePointLink('Newsletter')">
+                        <div class="sp-quicklink-image" style="background: linear-gradient(135deg, #34495e, #2c3e50); color: white;">📰</div>
+                        <h4 class="sp-quicklink-title">Newsletter</h4>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Other Resources Buttons -->
+            <div class="sp-quicklinks">
+                <h2 class="sp-quicklinks-title">Other resources</h2>
+                <div class="sp-button-links">
+                    <a href="#" class="sp-button-link" onclick="openSharePointLink('Training')">
+                        📚 Training
+                    </a>
+                    <a href="#" class="sp-button-link" onclick="openSharePointLink('Branding Checklist')">
+                        ✅ Branding checklist
+                    </a>
+                    <a href="#" class="sp-button-link" onclick="openSharePointLink('Voice and Language')">
+                        💬 Voice and language
+                    </a>
+                    <a href="#" class="sp-button-link" onclick="openSharePointLink('Related Reading')">
+                        📖 Related reading
+                    </a>
+                </div>
+            </div>
+
+            <!-- Hero Section -->
+            <div class="sp-hero">
+                <div class="sp-hero-content">
+                    <div class="sp-hero-feature">Images</div>
+                    <h2 class="sp-hero-title">New product photos</h2>
+                    <p class="sp-hero-description">Just in time for the holiday. Explore the new product and marketing images available.</p>
+                    <a href="#" class="sp-hero-button" onclick="openSharePointLink('Product Photos')">Browse photos</a>
+                </div>
+            </div>
+
+            <!-- Contact Section -->
+            <div class="sp-contact">
+                <h2 class="sp-contact-title">Need help with these resources?</h2>
+                <p class="sp-contact-description">Feel free to reach out and one of our team members will get back to you as soon as possible.</p>
+                <div class="sp-divider"></div>
+                <a href="#" class="sp-button" onclick="openContactForm()">Contact us</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function openSharePointLink(resourceName) {
+            alert(`${resourceName}\n\nThis would normally open:\n• SharePoint document library\n• Brand assets and resources\n• Templates and guidelines\n• Training materials\n\nOriginal SharePoint URL: https://saxllp.sharepoint.com/sites/SAXIntranet/SitePages/HomeForBrandCentral.aspx\n\nContent successfully migrated from SharePoint to Azure Static Web App!`);
+        }
+
+        function openContactForm() {
+            alert(`Contact Form\n\nThis would normally open a form to:\n• Submit marketing requests\n• Request brand assets\n• Get help with templates\n• Contact the brand team\n\nIntegration with SharePoint workflows available.`);
+        }
+
+        // Add SharePoint-like interactions
+        document.addEventListener('DOMContentLoaded', function() {
+            // Add subtle animations to cards
+            const cards = document.querySelectorAll('.sp-card, .sp-quicklink');
+            cards.forEach(card => {
+                card.addEventListener('mouseenter', function() {
+                    this.style.transform = 'translateY(-4px)';
+                });
+                card.addEventListener('mouseleave', function() {
+                    this.style.transform = 'translateY(0)';
+                });
+            });
+
+            console.log('SharePoint Brand Central page loaded - Authentic replica with real content structure');
+        });
+    </script>
+</body>
+</html>
